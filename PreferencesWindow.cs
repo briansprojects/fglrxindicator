@@ -1,24 +1,23 @@
 using Gtk;
 using System;
 using AppIndicator;
+using System.Threading;
 using System.Diagnostics;
 
 namespace fglrxindicator
 {
 	public class PreferencesWindow
 	{
-		string _line;
+		MenuItem _sensorOutput;
 
 		public PreferencesWindow ()
 		{
-			var win = new Window ("Fglrx Indicator");
-			win.Resize (300, 200);
-			win.Add (new Label("Hello Ubuntu"));
-			win.ShowAll ();
 			BuildIndicator ();
+			Thread thread1 = new System.Threading.Thread(new ThreadStart(WriteSensor));
+			thread1.Start();
 		}
 
-		private string ReadSensor()
+		private void WriteSensor() //Since there arent mono bindings for lm-sensors, we must use the shell.. 
 		{
 			Process proc = new Process 
 			{
@@ -31,16 +30,22 @@ namespace fglrxindicator
 			};
 
 			proc.Start();
-			while (!proc.StandardOutput.EndOfStream) 
+			while (true) //TODO: This is a piss-poor way of doing an auto-referesh but hey, it works. Barely.
 			{
-				_line = proc.StandardOutput.ReadToEnd();
+				var label = new Label(proc.StandardOutput.ReadToEnd());
+				proc.Close();
+
+				_sensorOutput.Add(label);
+				Thread.Sleep (1000);
+				_sensorOutput.Remove (label);
+				WriteSensor ();
 			}
-			proc.Close (); //Probably won't need this but doesn't hurt to have it
-			return _line;
 		}
 
 		private void BuildIndicator()
 		{
+
+
 			ApplicationIndicator indicator = new ApplicationIndicator
 			(
 				"Fglrx Indicator", //ID
@@ -48,19 +53,17 @@ namespace fglrxindicator
 				Category.Hardware,
 				System.IO.Path.GetDirectoryName (Environment.GetCommandLineArgs () [0]) //TODO: Factor this so that it isn't so ugly
 			);
-			//TODO: Figure out what is needed and what is not
-			var menuItemQuit = new ImageMenuItem ("Quit");
-			menuItemQuit.Image = new Gtk.Image (Stock.Quit, IconSize.Menu);
+			_sensorOutput = new MenuItem ();
+			var popupMenu = new Menu ();
+			var menuItemQuit = new MenuItem ("Quit");
 			menuItemQuit.Activated += (sender, e) => Application.Quit ();
 
-			var popupMenu = new Menu ();
-			popupMenu.Append(new ImageMenuItem ().Image = new Gtk.Image(Stock.Info, IconSize.Menu));
+			popupMenu.Append (_sensorOutput);
 			popupMenu.Append (menuItemQuit);
 			popupMenu.ShowAll();
 
 			indicator.Menu = popupMenu;
 			indicator.Status = AppIndicator.Status.Active;
-			ReadSensor (); //TODO: Put the output of this into the actual indicator
 		}
 	}
 }
