@@ -3,12 +3,14 @@ using System;
 using AppIndicator;
 using System.Threading;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace fglrxindicator
 {
 	public class PreferencesWindow
 	{
 		MenuItem _sensorOutput;
+		Label _label;
 
 		public PreferencesWindow ()
 		{
@@ -23,29 +25,21 @@ namespace fglrxindicator
 			{
 				StartInfo = new ProcessStartInfo 
 				{
-					FileName = "/usr/bin/sensors",
+					FileName = "/usr/bin/amdconfig",
+					Arguments = @"--od-gettemperature",
 					UseShellExecute = false,
 					RedirectStandardOutput = true
 				}
 			};
-
 			proc.Start();
-			while (true) //TODO: This is a piss-poor way of doing an auto-referesh but hey, it works. Barely.
-			{
-				var label = new Label(proc.StandardOutput.ReadToEnd());
-				proc.Close();
-
-				_sensorOutput.Add(label);
-				Thread.Sleep (1000);
-				_sensorOutput.Remove (label);
-				WriteSensor ();
-			}
+			_label.Text = proc.StandardOutput.ReadToEnd();
+			Thread.Sleep (2000);
+			proc.Close();
+			WriteSensor ();
 		}
 
 		private void BuildIndicator()
 		{
-
-
 			ApplicationIndicator indicator = new ApplicationIndicator
 			(
 				"Fglrx Indicator", //ID
@@ -54,6 +48,7 @@ namespace fglrxindicator
 				System.IO.Path.GetDirectoryName (Environment.GetCommandLineArgs () [0]) //TODO: Factor this so that it isn't so ugly
 			);
 			_sensorOutput = new MenuItem ();
+			_label = new Label ();
 			var popupMenu = new Menu ();
 			var menuItemQuit = new MenuItem ("Quit");
 			menuItemQuit.Activated += (sender, e) => Application.Quit ();
@@ -64,6 +59,7 @@ namespace fglrxindicator
 
 			indicator.Menu = popupMenu;
 			indicator.Status = AppIndicator.Status.Active;
+			_sensorOutput.Add(_label);
 		}
 	}
 }

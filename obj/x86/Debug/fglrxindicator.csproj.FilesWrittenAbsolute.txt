@@ -1,0 +1,6 @@
+/home/brian/Source/fglrxindicator/obj/x86/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
+/home/brian/Source/fglrxindicator/obj/x86/Debug/fglrxindicator.catalyst.png
+/home/brian/Source/fglrxindicator/bin/Debug/fglrxindicator.exe.mdb
+/home/brian/Source/fglrxindicator/bin/Debug/fglrxindicator.exe
+/home/brian/Source/fglrxindicator/obj/x86/Debug/fglrxindicator.exe
+/home/brian/Source/fglrxindicator/obj/x86/Debug/fglrxindicator.exe.mdb
