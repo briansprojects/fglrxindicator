@@ -1,5 +1,4 @@
 using Gtk;
-//using AppIndicator;
 
 namespace fglrxindicator
 {
@@ -8,7 +7,7 @@ namespace fglrxindicator
 		public static void Main ()
 		{
 			Application.Init ();
-			var win = new PreferencesWindow ();
+			var win = new FglrxIndicator ();
 			Application.Run ();
 		}
 	}
