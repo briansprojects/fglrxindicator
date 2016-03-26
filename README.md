@@ -8,4 +8,13 @@ This indicator is no more than a simple icon that appears in the indicator area 
 
 ## Compatibility
 
-It was written using Mono and targeted at Unity 7. Ubuntu has switched to Unity 8 which uses QT instead of GTK (which is what this indicator is written with) which means this is no longer compatible with Ubuntu.
+fglrxindicator was written using Mono and targeted at Unity 7. Ubuntu has switched to Unity 8 which uses QT instead of GTK (which is what this indicator is written with) which means this is no longer compatible with Ubuntu.
+
+## Dependencies
+
+The following dlls are used to build this project:
+
+* appindicator-sharp
+* atk-sharp
+* glib-sharp
+* gtk-sharp
